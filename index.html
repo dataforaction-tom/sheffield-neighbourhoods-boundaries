@@ -67,6 +67,52 @@
             font-size: 1.1rem;
         }
         
+        .data-download {
+            background: white;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .data-download h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .data-download p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            margin: 1rem 0;
+        }
+        
+        .download-btn:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .data-info {
+            font-size: 0.9rem !important;
+            color: #999 !important;
+            margin-top: 0.5rem;
+        }
+        
         .content-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -167,12 +213,12 @@
         
         .footer-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 2rem;
             margin-bottom: 1.5rem;
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .footer-grid {
                 grid-template-columns: 1fr;
             }
@@ -222,7 +268,16 @@
             <h2>About This Archive</h2>
             <p>This archive documents the neighbourhood boundaries and names used across Sheffield, England. The dataset represents work completed by <strong>Data For Action</strong> between 2023 and 2025.</p>
             <p>Sheffield is divided into 147 distinct neighbourhoods, each with its own character and community. This mapping work provides a reference framework for understanding Sheffield's social geography, supporting community organisations, researchers, and residents in navigating and understanding the city.</p>
-            <p>While the neighbourhood boundaries shown on this map are important, the process to define them is possibly even more important. You can see how this was approached <a href="https://dataforaction.notion.site/Phase-1-outputs-20397dba92c5802aa85de5faef762a74" target="_blank">here</a>  </p>
+            <p>While the neighbourhood boundaries shown on this map are important, the process to define them is possibly even more important. You can see how this was approached <a href="https://dataforaction.notion.site/Phase-1-outputs-20397dba92c5802aa85de5faef762a74" target="_blank">here</a></p>
+        </section>
+
+        <section class="data-download">
+            <h2>📥 Download Data</h2>
+            <p>Access the raw neighbourhood boundary data in GeoJSON format:</p>
+            <a href="data/neighbourhoods.geojson" download class="download-btn">
+                Download Sheffield Neighbourhoods (GeoJSON)
+            </a>
+            <p class="data-info">170KB • GeoJSON format • 147 neighbourhood polygons • CC BY 4.0 License</p>
         </section>
 
         <div class="content-grid">
@@ -250,15 +305,14 @@
                 </div>
                 <div>
                     <h3>Contact - Site</h3>
-                    <p>Tom Watson now maintains this site<br>
-                    Email: <a href="/cdn-cgi/l/email-protection#97fff2fbfbf8d7f3f6e3f6f1f8e5f6f4e3fef8f9b9e2fc"><span class="__cf_email__" data-cfemail="6a020f0606052a0e0b1e0b0c05180b091e030504441f01">[email&#160;protected]</span></a><br>
+                    <p><strong>Tom Watson</strong> now maintains this site<br>
+                    Email: <a href="mailto:hello@dataforaction.uk">hello@dataforaction.uk</a><br>
                     Website: <a href="https://tomcw.xyz" target="_blank">tomcw.xyz</a></p>
                 </div>
                 <div>
-                    <h3>Contact</h3>
+                    <h3>Contact - Tom French</h3>
                     <p><strong>Tom French</strong><br>
-                    Email: <a href="/cdn-cgi/l/email-protection#97fff2fbfbf8d7f3f6e3f6f1f8e5f6f4e3fef8f9b9e2fc"><span class="__cf_email__" data-cfemail="6a020f0606052a0e0b1e0b0c05180b091e030504441f01">Add French email</span></a><br>
-                    
+                    Email: <a href="mailto:TOMFRENCH@EMAIL.COM">Add Tom French's email here</a></p>
                 </div>
             </div>
             
@@ -427,7 +481,7 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Error loading GeoJSON:', error);
+                    console.error('Error loading neighbourhood data:', error);
                 });
         });
     </script>
