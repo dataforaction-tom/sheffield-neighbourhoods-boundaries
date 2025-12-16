@@ -220,9 +220,9 @@
     <main class="container">
         <section class="intro">
             <h2>About This Archive</h2>
-            <p>This archive documents the neighbourhood boundaries and names used across Sheffield, England. The dataset represents work completed by <strong>Data For Action</strong> between 2022 and 2025.</p>
+            <p>This archive documents the neighbourhood boundaries and names used across Sheffield, England. The dataset represents work completed by <strong>Data For Action</strong> between 2023 and 2025.</p>
             <p>Sheffield is divided into 147 distinct neighbourhoods, each with its own character and community. This mapping work provides a reference framework for understanding Sheffield's social geography, supporting community organisations, researchers, and residents in navigating and understanding the city.</p>
-            <p>The neighbourhood boundaries shown on this map were compiled from various sources and represent commonly-used area names. These boundaries are approximate and intended for general reference rather than official administrative purposes.</p>
+            <p>While the neighbourhood boundaries shown on this map are important, the process to define them is possibly even more important. You can see how this was approached <a href="https://dataforaction.notion.site/Phase-1-outputs-20397dba92c5802aa85de5faef762a74" target="_blank">here</a>  </p>
         </section>
 
         <div class="content-grid">
@@ -246,12 +246,12 @@
             <div class="footer-grid">
                 <div>
                     <h3>About Data For Action</h3>
-                    <p>Data For Action works with community organisations and social enterprises to build data literacy and capacity. We help organisations use data to understand needs, demonstrate impact, and make better decisions.</p>
+                    <p>Data For Action worked between 2023 and 2026 and was run by Tom French and Tom Watson. We helped organisations use data to make better decisions, work in the open and learn.</p>
                 </div>
                 <div>
                     <h3>Contact</h3>
-                    <p><strong>Tom Cawthorne</strong><br>
-                    Email: <a href="mailto:hello@dataforaction.uk">hello@dataforaction.uk</a><br>
+                    <p><strong>Tom Watson now maintains this site</strong><br>
+                    Email: <a href="/cdn-cgi/l/email-protection#97fff2fbfbf8d7f3f6e3f6f1f8e5f6f4e3fef8f9b9e2fc"><span class="__cf_email__" data-cfemail="6a020f0606052a0e0b1e0b0c05180b091e030504441f01">[email&#160;protected]</span></a><br>
                     Website: <a href="https://tomcw.xyz" target="_blank">tomcw.xyz</a></p>
                 </div>
             </div>
@@ -268,10 +268,32 @@
     </main>
 
     <script>
-        // Initialize the map
+        // Initialize the map with Carto Light basemap
         const map = new maplibregl.Map({
             container: 'map',
-            style: 'https://demotiles.maplibre.org/style.json',
+            style: {
+                version: 8,
+                sources: {
+                    carto: {
+                        type: 'raster',
+                        tiles: [
+                            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+                        ],
+                        tileSize: 256,
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    }
+                },
+                layers: [{
+                    id: 'carto-light',
+                    type: 'raster',
+                    source: 'carto',
+                    minzoom: 0,
+                    maxzoom: 22
+                }]
+            },
             center: [-1.47, 53.38],
             zoom: 11,
             maxBounds: [[-1.8, 53.2], [-1.2, 53.6]]
@@ -399,7 +421,7 @@
                     });
                 })
                 .catch(error => {
-                    console.error('Error loading neighbourhood data:', error);
+                    console.error('Error loading GeoJSON:', error);
                 });
         });
     </script>
