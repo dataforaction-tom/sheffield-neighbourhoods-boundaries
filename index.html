@@ -1,489 +1,3496 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheffield Neighbourhoods Archive | Data For Action</title>
+<!
+DOCTYPE
+ 
+html
+>
+
+<
+html
+ 
+lang
+=
+"
+en
+"
+>
+
+<
+head
+>
+
     
-    <!-- MapLibre GL JS -->
-    <script src='https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js'></script>
-    <link href='https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css' rel='stylesheet' />
+<
+meta
+ 
+charset
+=
+"
+UTF-8
+"
+>
+
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
-        }
-        
-        header {
-            background: #2c3e50;
-            color: white;
-            padding: 2rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        .intro {
-            background: white;
-            padding: 2rem;
-            margin: 2rem 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .intro h2 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-        }
-        
-        .intro p {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-        
-        .data-download {
-            background: white;
-            padding: 2rem;
-            margin: 2rem 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .data-download h2 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-        }
-        
-        .data-download p {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            color: #666;
-        }
-        
-        .download-btn {
-            display: inline-block;
-            background: #2c3e50;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            margin: 1rem 0;
-        }
-        
-        .download-btn:hover {
-            background: #34495e;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .data-info {
-            font-size: 0.9rem !important;
-            color: #999 !important;
-            margin-top: 0.5rem;
-        }
-        
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        @media (max-width: 968px) {
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .map-container {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        #map {
-            width: 100%;
-            height: 600px;
-        }
-        
-        .map-legend {
-            padding: 1rem;
-            background: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .neighbourhoods-list {
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .neighbourhoods-list h2 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .neighbourhood-count {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        
-        .neighbourhood-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.3rem;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-        }
-        
-        .neighbourhood-grid::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .neighbourhood-grid::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-        
-        .neighbourhood-grid::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        
-        .neighbourhood-grid::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        .neighbourhood-item {
-            padding: 0.5rem;
-            border-left: 3px solid #e9ecef;
-            transition: all 0.2s;
-        }
-        
-        .neighbourhood-item:hover {
-            border-left-color: #2c3e50;
-            background: #f8f9fa;
-        }
-        
-        footer {
-            background: white;
-            padding: 2rem;
-            margin-top: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        @media (max-width: 968px) {
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        footer h3 {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-        
-        footer p, footer a {
-            color: #666;
-            text-decoration: none;
-            font-size: 0.95rem;
-        }
-        
-        footer a:hover {
-            color: #2c3e50;
-            text-decoration: underline;
-        }
-        
-        .license {
-            border-top: 1px solid #dee2e6;
-            padding-top: 1.5rem;
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .license img {
-            height: 31px;
-            margin-top: 0.5rem;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1>Sheffield Neighbourhoods Archive</h1>
-            <p class="subtitle">A geographical reference dataset from Data For Action</p>
-        </div>
-    </header>
+<
+meta
+ 
+name
+=
+"
+viewport
+"
+ 
+content
+=
+"
+width=device-width, initial-scale=1.0
+"
+>
 
-    <main class="container">
-        <section class="intro">
-            <h2>About This Archive</h2>
-            <p>This archive documents the neighbourhood boundaries and names used across Sheffield, England. The dataset represents work completed by <strong>Data For Action</strong> between 2023 and 2025.</p>
-            <p>Sheffield is divided into 147 distinct neighbourhoods, each with its own character and community. This mapping work provides a reference framework for understanding Sheffield's social geography, supporting community organisations, researchers, and residents in navigating and understanding the city.</p>
-            <p>While the neighbourhood boundaries shown on this map are important, the process to define them is possibly even more important. You can see how this was approached <a href="https://dataforaction.notion.site/Phase-1-outputs-20397dba92c5802aa85de5faef762a74" target="_blank">here</a></p>
-        </section>
+    
+<
+title
+>
+Sheffield Neighbourhoods Archive | Data For Action
+</
+title
+>
 
-        <section class="data-download">
-            <h2>📥 Download Data</h2>
-            <p>Access the raw neighbourhood boundary data in GeoJSON format:</p>
-            <a href="data/neighbourhoods.geojson" download class="download-btn">
-                Download Sheffield Neighbourhoods (GeoJSON)
-            </a>
-            <p class="data-info">170KB • GeoJSON format • 147 neighbourhood polygons • CC BY 4.0 License</p>
-        </section>
+    
+<!-- MapLibre GL JS -->
 
-        <div class="content-grid">
-            <div class="map-container">
-                <div id="map"></div>
-                <div class="map-legend">
-                    <strong>Interactive Map:</strong> Click on any neighbourhood to see its name. Zoom and pan to explore Sheffield's geography.
-                </div>
-            </div>
+    
+<
+script
+ 
+src
+=
+'
+https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.js
+'
+>
+</
+script
+>
 
-            <div class="neighbourhoods-list">
-                <h2>Sheffield Neighbourhoods</h2>
-                <p class="neighbourhood-count">147 neighbourhoods mapped</p>
-                <div class="neighbourhood-grid" id="neighbourhoodList">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-        </div>
+    
+<
+link
+ 
+href
+=
+'
+https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css
+'
+ 
+rel
+=
+'
+stylesheet
+'
+ 
+/>
 
-        <footer>
-            <div class="footer-grid">
-                <div>
-                    <h3>About Data For Action</h3>
-                    <p>Data For Action worked between 2023 and 2026 and was run by Tom French and Tom Watson. We helped organisations use data to make better decisions, work in the open and learn.</p>
-                </div>
-                <div>
-                    <h3>Contact - Site</h3>
-                    <p><strong>Tom Watson</strong> now maintains this site<br>
-                    Email: <a href="mailto:hello@dataforaction.uk">hello@dataforaction.uk</a><br>
-                    Website: <a href="https://tomcw.xyz" target="_blank">tomcw.xyz</a></p>
-                </div>
-                <div>
-                    <h3>Contact - Tom French</h3>
-                    <p><strong>Tom French</strong><br>
-                    Email: <a href="mailto:TOMFRENCH@EMAIL.COM">Add Tom French's email here</a></p>
-                </div>
-            </div>
+    
+<
+style
+>
+
+        
+*
+ 
+{
+
             
-            <div class="license">
-                <h3>License</h3>
-                <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International License</a>.</p>
-                <p>You are free to share and adapt this material for any purpose, including commercial use, provided you give appropriate credit to Data For Action.</p>
-                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
-                    <img src="https://i.creativecommons.org/l/by/4.0/88x31.png" alt="CC BY 4.0">
-                </a>
-            </div>
-        </footer>
-    </main>
+margin
+:
+ 
+0
+;
 
-    <script>
-        // Initialize the map with Carto Light basemap
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: {
-                version: 8,
-                sources: {
-                    carto: {
-                        type: 'raster',
-                        tiles: [
-                            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-                        ],
-                        tileSize: 256,
-                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                    }
-                },
-                layers: [{
-                    id: 'carto-light',
-                    type: 'raster',
-                    source: 'carto',
-                    minzoom: 0,
-                    maxzoom: 22
-                }]
-            },
-            center: [-1.47, 53.38],
-            zoom: 11,
-            maxBounds: [[-1.8, 53.2], [-1.2, 53.6]]
-        });
+            
+padding
+:
+ 
+0
+;
 
-        // Add navigation controls
-        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+            
+box-sizing
+:
+ border-box
+;
 
-        // Neighbourhood list
-        const neighbourhoods = [
-            "Arbourthorne", "Attercliffe", "Banner Cross", "Base Green", "Batemoor",
-            "Beauchief", "Beighton", "Bents Green", "Birley", "Birley Carr",
-            "Birley Spa", "Bradfield / High Bradfield / Low Bradfield / Rural West",
-            "Bradway", "Brightside", "Brincliffe", "Broomhall", "Broomhill", "Burncross",
-            "Burngreave", "Carbrook", "Carterknowle / Carter Knowle",
-            "Castlegate / Victoria Quays / Riverside", "Cathedral Quarter", "Chapeltown",
-            "Charnock", "City Centre / Town Centre / Heart of the City", "Colley",
-            "Crookes", "Crookesmoor / Crookes Valley / Commonside", "Crosspool",
-            "Cultural Industries Quarter", "Darnall", "Deepcar", "Devonshire Quarter",
-            "Dore", "Dungworth", "Ecclesall", "Ecclesfield", "Ellesmere", "Endcliffe",
-            "Ewden and Bolsterstone", "Fir Vale", "Firshill", "Firth Park", "Foxhill",
-            "Frecheville", "Fulwood", "Gleadless / Gleadless Valley", "Gleadless Townend",
-            "Greenhill", "Grenoside", "Greystones", "Grimesthorpe", "Hackenthorpe",
-            "Halfway", "Handsworth", "Heeley / Heeley Green", "Hemsworth", "Herdings",
-            "High Green", "High Storrs", "Highfield", "Hill Top",
-            "Hillsborough / Hillsborough Corner", "Holbrook", "Hollinsend", "Hunters Bar",
-            "Hurlfield", "Hyde Park", "Intake", "Jordanthorpe", "Kelham / Kelham Island",
-            "Little Sheffield", "Littledale", "Lodge Moor", "Longley",
-            "Low Edges / Lowedges", "Lowfield", "Loxley / Loxley Valley", "Malin Bridge",
-            "Manor / Manor Park / Manor Top", "Meadowhead", "Meersbrook", "Middlewood",
-            "Midhopestones", "Millhouses", "Mosborough", "Neepsend", "Nether Edge",
-            "Nether Green", "Netherthorpe", "Newfield Green", "Norfolk Park",
-            "Normanton Spring", "Norton", "Norton Hammer", "Norton Lees", "Norwood",
-            "Osgathorpe", "Oughtibridge", "Owlerton", "Owlthorpe", "Page Hall",
-            "Park Hill", "Parkhead", "Parkwood Springs", "Parson Cross", "Philadelphia",
-            "Pitsmoor", "Ranmoor", "Richmond", "Ringinglow", "Rivelin / Rivelin Valley",
-            "Saint Vincent's and Shalesmoor", "Sandygate", "Sharrow", "Sharrow Vale",
-            "Sheffield Lane Top", "Shirecliffe", "Shiregreen", "Sothall", "Southey",
-            "St George's Quarter", "Stannington East and Deer Park", "Stannington West",
-            "Stocksbridge", "Tapton", "The Moor", "Tinsley", "Totley", "Upperthorpe",
-            "Wadsley", "Wadsley Bridge", "Walkley", "Waterthorpe", "Westfield",
-            "Wharncliffe Side", "Whirlow", "Wicker", "Wincobank", "Winn Gardens",
-            "Wisewood", "Woodhouse", "Woodseats", "Woodthorpe", "Worrall", "Wybourn"
-        ];
+        
+}
 
-        // Populate neighbourhood list
-        const listContainer = document.getElementById('neighbourhoodList');
-        neighbourhoods.forEach(name => {
-            const item = document.createElement('div');
-            item.className = 'neighbourhood-item';
-            item.textContent = name;
-            listContainer.appendChild(item);
-        });
+        
+body
+ 
+{
 
-        // Load and display the GeoJSON
-        map.on('load', () => {
-            fetch('data/neighbourhoods.geojson')
-                .then(response => response.json())
-                .then(data => {
-                    // Add the GeoJSON source
-                    map.addSource('neighbourhoods', {
-                        type: 'geojson',
-                        data: data
-                    });
+            
+font-family
+:
+ -apple-system
+,
+ BlinkMacSystemFont
+,
+ 
+'Segoe UI'
+,
+ Roboto
+,
+ 
+'Helvetica Neue'
+,
+ Arial
+,
+ sans-serif
+;
 
-                    // Add a layer for the neighbourhood boundaries
-                    map.addLayer({
-                        id: 'neighbourhood-fills',
-                        type: 'fill',
-                        source: 'neighbourhoods',
-                        paint: {
-                            'fill-color': '#2c3e50',
-                            'fill-opacity': 0.05
-                        }
-                    });
+            
+line-height
+:
+ 
+1.6
+;
 
-                    // Add a layer for the neighbourhood outlines
-                    map.addLayer({
-                        id: 'neighbourhood-borders',
-                        type: 'line',
-                        source: 'neighbourhoods',
-                        paint: {
-                            'line-color': '#333333',
-                            'line-width': 1
-                        }
-                    });
+            
+color
+:
+ 
+#333
+;
 
-                    // Add hover effect
-                    map.addLayer({
-                        id: 'neighbourhood-hover',
-                        type: 'fill',
-                        source: 'neighbourhoods',
-                        paint: {
-                            'fill-color': '#2c3e50',
-                            'fill-opacity': 0.3
-                        },
-                        filter: ['==', 'name', '']
-                    });
+            
+background
+:
+ 
+#f5f5f5
+;
 
-                    // Create popup
-                    const popup = new maplibregl.Popup({
-                        closeButton: false,
-                        closeOnClick: false
-                    });
+        
+}
 
-                    // Show popup on hover
-                    map.on('mousemove', 'neighbourhood-fills', (e) => {
-                        map.getCanvas().style.cursor = 'pointer';
+        
+header
+ 
+{
 
-                        const name = e.features[0].properties.name;
+            
+background
+:
+ 
+#2c3e50
+;
+
+            
+color
+:
+ 
+white
+;
+
+            
+padding
+:
+ 
+2
+rem
+ 
+0
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+        
+}
+
+        
+.container
+ 
+{
+
+            
+max-width
+:
+ 
+1400
+px
+;
+
+            
+margin
+:
+ 
+0
+ auto
+;
+
+            
+padding
+:
+ 
+0
+ 
+2
+rem
+;
+
+        
+}
+
+        
+h1
+ 
+{
+
+            
+font-size
+:
+ 
+2.5
+rem
+;
+
+            
+margin-bottom
+:
+ 
+0.5
+rem
+;
+
+            
+font-weight
+:
+ 
+600
+;
+
+        
+}
+
+        
+.subtitle
+ 
+{
+
+            
+font-size
+:
+ 
+1.2
+rem
+;
+
+            
+opacity
+:
+ 
+0.9
+;
+
+            
+font-weight
+:
+ 
+300
+;
+
+        
+}
+
+        
+.intro
+ 
+{
+
+            
+background
+:
+ 
+white
+;
+
+            
+padding
+:
+ 
+2
+rem
+;
+
+            
+margin
+:
+ 
+2
+rem
+ 
+0
+;
+
+            
+border-radius
+:
+ 
+8
+px
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+        
+}
+
+        
+.intro
+ h2
+ 
+{
+
+            
+color
+:
+ 
+#2c3e50
+;
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+            
+font-size
+:
+ 
+1.8
+rem
+;
+
+        
+}
+
+        
+.intro
+ p
+ 
+{
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+            
+font-size
+:
+ 
+1.1
+rem
+;
+
+        
+}
+
+        
+.data-download
+ 
+{
+
+            
+background
+:
+ 
+white
+;
+
+            
+padding
+:
+ 
+2
+rem
+;
+
+            
+margin
+:
+ 
+2
+rem
+ 
+0
+;
+
+            
+border-radius
+:
+ 
+8
+px
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+            
+text-align
+:
+ center
+;
+
+        
+}
+
+        
+.data-download
+ h2
+ 
+{
+
+            
+color
+:
+ 
+#2c3e50
+;
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+            
+font-size
+:
+ 
+1.8
+rem
+;
+
+        
+}
+
+        
+.data-download
+ p
+ 
+{
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+            
+font-size
+:
+ 
+1.1
+rem
+;
+
+            
+color
+:
+ 
+#666
+;
+
+        
+}
+
+        
+.download-btn
+ 
+{
+
+            
+display
+:
+ inline-block
+;
+
+            
+background
+:
+ 
+#2c3e50
+;
+
+            
+color
+:
+ 
+white
+;
+
+            
+padding
+:
+ 
+1
+rem
+ 
+2
+rem
+;
+
+            
+border-radius
+:
+ 
+6
+px
+;
+
+            
+text-decoration
+:
+ none
+;
+
+            
+font-weight
+:
+ 
+600
+;
+
+            
+font-size
+:
+ 
+1.1
+rem
+;
+
+            
+transition
+:
+ all 
+0.3
+s
+;
+
+            
+margin
+:
+ 
+1
+rem
+ 
+0
+;
+
+        
+}
+
+        
+.download-btn
+:hover
+ 
+{
+
+            
+background
+:
+ 
+#34495e
+;
+
+            
+transform
+:
+ 
+translateY
+(
+-2
+px
+)
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+4
+px
+ 
+8
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.2
+)
+;
+
+        
+}
+
+        
+.data-info
+ 
+{
+
+            
+font-size
+:
+ 
+0.9
+rem
+ 
+!important
+;
+
+            
+color
+:
+ 
+#999
+ 
+!important
+;
+
+            
+margin-top
+:
+ 
+0.5
+rem
+;
+
+        
+}
+
+        
+.content-grid
+ 
+{
+
+            
+display
+:
+ grid
+;
+
+            
+grid-template-columns
+:
+ 
+2
+fr
+ 
+1
+fr
+;
+
+            
+gap
+:
+ 
+2
+rem
+;
+
+            
+margin-bottom
+:
+ 
+2
+rem
+;
+
+        
+}
+
+        
+@media
+ 
+(
+max-width
+:
+ 
+968
+px
+)
+ 
+{
+
+            
+.content-grid
+ 
+{
+
+                
+grid-template-columns
+:
+ 
+1
+fr
+;
+
+            
+}
+
+        
+}
+
+        
+.map-container
+ 
+{
+
+            
+background
+:
+ 
+white
+;
+
+            
+border-radius
+:
+ 
+8
+px
+;
+
+            
+overflow
+:
+ hidden
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+        
+}
+
+        
+#map
+ 
+{
+
+            
+width
+:
+ 
+100
+%
+;
+
+            
+height
+:
+ 
+600
+px
+;
+
+        
+}
+
+        
+.map-legend
+ 
+{
+
+            
+padding
+:
+ 
+1
+rem
+;
+
+            
+background
+:
+ 
+#f8f9fa
+;
+
+            
+border-top
+:
+ 
+1
+px
+ solid 
+#dee2e6
+;
+
+            
+font-size
+:
+ 
+0.9
+rem
+;
+
+            
+color
+:
+ 
+#666
+;
+
+        
+}
+
+        
+.neighbourhoods-list
+ 
+{
+
+            
+background
+:
+ 
+white
+;
+
+            
+border-radius
+:
+ 
+8
+px
+;
+
+            
+padding
+:
+ 
+2
+rem
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+        
+}
+
+        
+.neighbourhoods-list
+ h2
+ 
+{
+
+            
+color
+:
+ 
+#2c3e50
+;
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+            
+font-size
+:
+ 
+1.5
+rem
+;
+
+        
+}
+
+        
+.neighbourhood-count
+ 
+{
+
+            
+color
+:
+ 
+#666
+;
+
+            
+font-size
+:
+ 
+0.9
+rem
+;
+
+            
+margin-bottom
+:
+ 
+1
+rem
+;
+
+        
+}
+
+        
+.neighbourhood-grid
+ 
+{
+
+            
+display
+:
+ grid
+;
+
+            
+grid-template-columns
+:
+ 
+1
+fr
+;
+
+            
+gap
+:
+ 
+0.3
+rem
+;
+
+            
+max-height
+:
+ 
+600
+px
+;
+
+            
+overflow-y
+:
+ auto
+;
+
+            
+padding-right
+:
+ 
+0.5
+rem
+;
+
+        
+}
+
+        
+.neighbourhood-grid
+::-webkit-scrollbar
+ 
+{
+
+            
+width
+:
+ 
+8
+px
+;
+
+        
+}
+
+        
+.neighbourhood-grid
+::-webkit-scrollbar-track
+ 
+{
+
+            
+background
+:
+ 
+#f1f1f1
+;
+
+            
+border-radius
+:
+ 
+4
+px
+;
+
+        
+}
+
+        
+.neighbourhood-grid
+::-webkit-scrollbar-thumb
+ 
+{
+
+            
+background
+:
+ 
+#888
+;
+
+            
+border-radius
+:
+ 
+4
+px
+;
+
+        
+}
+
+        
+.neighbourhood-grid
+::-webkit-scrollbar-thumb
+:hover
+ 
+{
+
+            
+background
+:
+ 
+#555
+;
+
+        
+}
+
+        
+.neighbourhood-item
+ 
+{
+
+            
+padding
+:
+ 
+0.5
+rem
+;
+
+            
+border-left
+:
+ 
+3
+px
+ solid 
+#e9ecef
+;
+
+            
+transition
+:
+ all 
+0.2
+s
+;
+
+        
+}
+
+        
+.neighbourhood-item
+:hover
+ 
+{
+
+            
+border-left-color
+:
+ 
+#2c3e50
+;
+
+            
+background
+:
+ 
+#f8f9fa
+;
+
+        
+}
+
+        
+footer
+ 
+{
+
+            
+background
+:
+ 
+white
+;
+
+            
+padding
+:
+ 
+2
+rem
+;
+
+            
+margin-top
+:
+ 
+2
+rem
+;
+
+            
+border-radius
+:
+ 
+8
+px
+;
+
+            
+box-shadow
+:
+ 
+0
+ 
+2
+px
+ 
+4
+px
+ 
+rgba
+(
+0
+,
+0
+,
+0
+,
+0.1
+)
+;
+
+        
+}
+
+        
+.footer-grid
+ 
+{
+
+            
+display
+:
+ grid
+;
+
+            
+grid-template-columns
+:
+ 
+1
+fr
+ 
+1
+fr
+;
+
+            
+gap
+:
+ 
+2
+rem
+;
+
+            
+margin-bottom
+:
+ 
+1.5
+rem
+;
+
+        
+}
+
+        
+@media
+ 
+(
+max-width
+:
+ 
+768
+px
+)
+ 
+{
+
+            
+.footer-grid
+ 
+{
+
+                
+grid-template-columns
+:
+ 
+1
+fr
+;
+
+            
+}
+
+        
+}
+
+        
+footer h3
+ 
+{
+
+            
+color
+:
+ 
+#2c3e50
+;
+
+            
+margin-bottom
+:
+ 
+0.5
+rem
+;
+
+            
+font-size
+:
+ 
+1.2
+rem
+;
+
+        
+}
+
+        
+footer p
+,
+ footer a
+ 
+{
+
+            
+color
+:
+ 
+#666
+;
+
+            
+text-decoration
+:
+ none
+;
+
+            
+font-size
+:
+ 
+0.95
+rem
+;
+
+        
+}
+
+        
+footer a
+:hover
+ 
+{
+
+            
+color
+:
+ 
+#2c3e50
+;
+
+            
+text-decoration
+:
+ underline
+;
+
+        
+}
+
+        
+.license
+ 
+{
+
+            
+border-top
+:
+ 
+1
+px
+ solid 
+#dee2e6
+;
+
+            
+padding-top
+:
+ 
+1.5
+rem
+;
+
+            
+margin-top
+:
+ 
+1.5
+rem
+;
+
+            
+font-size
+:
+ 
+0.9
+rem
+;
+
+            
+color
+:
+ 
+#666
+;
+
+        
+}
+
+        
+.license
+ img
+ 
+{
+
+            
+height
+:
+ 
+31
+px
+;
+
+            
+margin-top
+:
+ 
+0.5
+rem
+;
+
+        
+}
+
+    
+</
+style
+>
+
+</
+head
+>
+
+<
+body
+>
+
+    
+<
+header
+>
+
+        
+<
+div
+ 
+class
+=
+"
+container
+"
+>
+
+            
+<
+h1
+>
+Sheffield Neighbourhoods Archive
+</
+h1
+>
+
+            
+<
+p
+ 
+class
+=
+"
+subtitle
+"
+>
+A geographical reference dataset from Data For Action
+</
+p
+>
+
+        
+</
+div
+>
+
+    
+</
+header
+>
+
+    
+<
+main
+ 
+class
+=
+"
+container
+"
+>
+
+        
+<
+section
+ 
+class
+=
+"
+intro
+"
+>
+
+            
+<
+h2
+>
+About This Archive
+</
+h2
+>
+
+            
+<
+p
+>
+This archive documents the neighbourhood boundaries and names used across Sheffield, England. The dataset represents work completed by 
+<
+strong
+>
+Data For Action
+</
+strong
+>
+ between 2023 and 2025.
+</
+p
+>
+
+            
+<
+p
+>
+Sheffield is divided into 147 distinct neighbourhoods, each with its own character and community. This mapping work provides a reference framework for understanding Sheffield's social geography, supporting community organisations, researchers, and residents in navigating and understanding the city.
+</
+p
+>
+
+            
+<
+p
+>
+While the neighbourhood boundaries shown on this map are important, the process to define them is possibly even more important. You can see how this was approached 
+<
+a
+ 
+href
+=
+"
+https://dataforaction.notion.site/Phase-1-outputs-20397dba92c5802aa85de5faef762a74
+"
+ 
+target
+=
+"
+_blank
+"
+>
+here
+</
+a
+>
+  
+</
+p
+>
+
+        
+</
+section
+>
+
+        
+<
+section
+ 
+class
+=
+"
+data-download
+"
+>
+
+            
+<
+h2
+>
+📥 Download Data
+</
+h2
+>
+
+            
+<
+p
+>
+Access the raw neighbourhood boundary data in GeoJSON format:
+</
+p
+>
+
+            
+<
+a
+ 
+href
+=
+"
+data/neighbourhoods.geojson
+"
+ 
+download
+ 
+class
+=
+"
+download-btn
+"
+>
+
+                Download Sheffield Neighbourhoods (GeoJSON)
+            
+</
+a
+>
+
+            
+<
+p
+ 
+class
+=
+"
+data-info
+"
+>
+170KB • GeoJSON format • 147 neighbourhood polygons • CC BY 4.0 License
+</
+p
+>
+
+        
+</
+section
+>
+
+        
+<
+div
+ 
+class
+=
+"
+content-grid
+"
+>
+
+            
+<
+div
+ 
+class
+=
+"
+map-container
+"
+>
+
+                
+<
+div
+ 
+id
+=
+"
+map
+"
+>
+</
+div
+>
+
+                
+<
+div
+ 
+class
+=
+"
+map-legend
+"
+>
+
+                    
+<
+strong
+>
+Interactive Map:
+</
+strong
+>
+ Click on any neighbourhood to see its name. Zoom and pan to explore Sheffield's geography.
+                
+</
+div
+>
+
+            
+</
+div
+>
+
+            
+<
+div
+ 
+class
+=
+"
+neighbourhoods-list
+"
+>
+
+                
+<
+h2
+>
+Sheffield Neighbourhoods
+</
+h2
+>
+
+                
+<
+p
+ 
+class
+=
+"
+neighbourhood-count
+"
+>
+147 neighbourhoods mapped
+</
+p
+>
+
+                
+<
+div
+ 
+class
+=
+"
+neighbourhood-grid
+"
+ 
+id
+=
+"
+neighbourhoodList
+"
+>
+
+                    
+<!-- Populated by JavaScript -->
+
+                
+</
+div
+>
+
+            
+</
+div
+>
+
+        
+</
+div
+>
+
+        
+<
+footer
+>
+
+            
+<
+div
+ 
+class
+=
+"
+footer-grid
+"
+>
+
+                
+<
+div
+>
+
+                    
+<
+h3
+>
+About Data For Action
+</
+h3
+>
+
+                    
+<
+p
+>
+Data For Action worked between 2023 and 2026 and was run by Tom French and Tom Watson. We helped organisations use data to make better decisions, work in the open and learn.
+</
+p
+>
+
+                
+</
+div
+>
+
+                
+<
+div
+>
+
+                    
+<
+h3
+>
+Contact - Site
+</
+h3
+>
+
+                    
+<
+p
+>
+Tom Watson now maintains this site
+<
+br
+>
+
+                    Email: 
+<
+a
+ 
+href
+=
+"
+mailto:hello@dataforaction.uk
+"
+>
+hello@dataforaction.uk
+</
+a
+>
+<
+br
+>
+
+                    Website: 
+<
+a
+ 
+href
+=
+"
+https://tomcw.xyz
+"
+ 
+target
+=
+"
+_blank
+"
+>
+tomcw.xyz
+</
+a
+>
+</
+p
+>
+
+                
+</
+div
+>
+
+                
+<
+div
+>
+
+                    
+<
+h3
+>
+Contact
+</
+h3
+>
+
+                    
+<
+p
+>
+<
+strong
+>
+Tom French
+</
+strong
+>
+<
+br
+>
+
+                    Email: 
+<
+a
+ 
+href
+=
+"
+mailto:ADDFRENCHEMAIL@example.com
+"
+>
+Add French email
+</
+a
+>
+<
+br
+>
+
+                
+</
+div
+>
+
+            
+</
+div
+>
+
+            
+<
+div
+ 
+class
+=
+"
+license
+"
+>
+
+                
+<
+h3
+>
+License
+</
+h3
+>
+
+                
+<
+p
+>
+This work is licensed under a 
+<
+a
+ 
+href
+=
+"
+https://creativecommons.org/licenses/by/4.0/
+"
+ 
+target
+=
+"
+_blank
+"
+>
+Creative Commons Attribution 4.0 International License
+</
+a
+>
+.
+</
+p
+>
+
+                
+<
+p
+>
+You are free to share and adapt this material for any purpose, including commercial use, provided you give appropriate credit to Data For Action.
+</
+p
+>
+
+                
+<
+a
+ 
+href
+=
+"
+https://creativecommons.org/licenses/by/4.0/
+"
+ 
+target
+=
+"
+_blank
+"
+>
+
+                    
+<
+img
+ 
+src
+=
+"
+https://i.creativecommons.org/l/by/4.0/88x31.png
+"
+ 
+alt
+=
+"
+CC BY 4.0
+"
+>
+
+                
+</
+a
+>
+
+            
+</
+div
+>
+
+        
+</
+footer
+>
+
+    
+</
+main
+>
+
+    
+<
+script
+>
+
+        
+// Initialize the map with Carto Light basemap
+
+        
+const
+ map 
+=
+ 
+new
+ 
+maplibregl
+.
+Map
+(
+{
+
+            
+container
+:
+ 
+'map'
+,
+
+            
+style
+:
+ 
+{
+
+                
+version
+:
+ 
+8
+,
+
+                
+sources
+:
+ 
+{
+
+                    
+carto
+:
+ 
+{
+
                         
-                        // Update hover layer
-                        map.setFilter('neighbourhood-hover', ['==', 'name', name]);
+type
+:
+ 
+'raster'
+,
 
-                        // Show popup
-                        popup.setLngLat(e.lngLat)
-                            .setHTML(`<strong>${name}</strong>`)
-                            .addTo(map);
-                    });
+                        
+tiles
+:
+ 
+[
 
-                    map.on('mouseleave', 'neighbourhood-fills', () => {
-                        map.getCanvas().style.cursor = '';
-                        map.setFilter('neighbourhood-hover', ['==', 'name', '']);
-                        popup.remove();
-                    });
-                })
-                .catch(error => {
-                    console.error('Error loading neighbourhood data:', error);
-                });
-        });
-    </script>
-</body>
-</html>
+                            
+'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+,
+
+                            
+'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+,
+
+                            
+'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+,
+
+                            
+'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+
+                        
+]
+,
+
+                        
+tileSize
+:
+ 
+256
+,
+
+                        
+attribution
+:
+ 
+'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+
+                    
+}
+
+                
+}
+,
+
+                
+layers
+:
+ 
+[
+{
+
+                    
+id
+:
+ 
+'carto-light'
+,
+
+                    
+type
+:
+ 
+'raster'
+,
+
+                    
+source
+:
+ 
+'carto'
+,
+
+                    
+minzoom
+:
+ 
+0
+,
+
+                    
+maxzoom
+:
+ 
+22
+
+                
+}
+]
+
+            
+}
+,
+
+            
+center
+:
+ 
+[
+-
+1.47
+,
+ 
+53.38
+]
+,
+
+            
+zoom
+:
+ 
+11
+,
+
+            
+maxBounds
+:
+ 
+[
+[
+-
+1.8
+,
+ 
+53.2
+]
+,
+ 
+[
+-
+1.2
+,
+ 
+53.6
+]
+]
+
+        
+}
+)
+;
+
+        
+// Add navigation controls
+
+        map
+.
+addControl
+(
+new
+ 
+maplibregl
+.
+NavigationControl
+(
+)
+,
+ 
+'top-right'
+)
+;
+
+        
+// Neighbourhood list
+
+        
+const
+ neighbourhoods 
+=
+ 
+[
+
+            
+"Arbourthorne"
+,
+ 
+"Attercliffe"
+,
+ 
+"Banner Cross"
+,
+ 
+"Base Green"
+,
+ 
+"Batemoor"
+,
+
+            
+"Beauchief"
+,
+ 
+"Beighton"
+,
+ 
+"Bents Green"
+,
+ 
+"Birley"
+,
+ 
+"Birley Carr"
+,
+
+            
+"Birley Spa"
+,
+ 
+"Bradfield / High Bradfield / Low Bradfield / Rural West"
+,
+
+            
+"Bradway"
+,
+ 
+"Brightside"
+,
+ 
+"Brincliffe"
+,
+ 
+"Broomhall"
+,
+ 
+"Broomhill"
+,
+ 
+"Burncross"
+,
+
+            
+"Burngreave"
+,
+ 
+"Carbrook"
+,
+ 
+"Carterknowle / Carter Knowle"
+,
+
+            
+"Castlegate / Victoria Quays / Riverside"
+,
+ 
+"Cathedral Quarter"
+,
+ 
+"Chapeltown"
+,
+
+            
+"Charnock"
+,
+ 
+"City Centre / Town Centre / Heart of the City"
+,
+ 
+"Colley"
+,
+
+            
+"Crookes"
+,
+ 
+"Crookesmoor / Crookes Valley / Commonside"
+,
+ 
+"Crosspool"
+,
+
+            
+"Cultural Industries Quarter"
+,
+ 
+"Darnall"
+,
+ 
+"Deepcar"
+,
+ 
+"Devonshire Quarter"
+,
+
+            
+"Dore"
+,
+ 
+"Dungworth"
+,
+ 
+"Ecclesall"
+,
+ 
+"Ecclesfield"
+,
+ 
+"Ellesmere"
+,
+ 
+"Endcliffe"
+,
+
+            
+"Ewden and Bolsterstone"
+,
+ 
+"Fir Vale"
+,
+ 
+"Firshill"
+,
+ 
+"Firth Park"
+,
+ 
+"Foxhill"
+,
+
+            
+"Frecheville"
+,
+ 
+"Fulwood"
+,
+ 
+"Gleadless / Gleadless Valley"
+,
+ 
+"Gleadless Townend"
+,
+
+            
+"Greenhill"
+,
+ 
+"Grenoside"
+,
+ 
+"Greystones"
+,
+ 
+"Grimesthorpe"
+,
+ 
+"Hackenthorpe"
+,
+
+            
+"Halfway"
+,
+ 
+"Handsworth"
+,
+ 
+"Heeley / Heeley Green"
+,
+ 
+"Hemsworth"
+,
+ 
+"Herdings"
+,
+
+            
+"High Green"
+,
+ 
+"High Storrs"
+,
+ 
+"Highfield"
+,
+ 
+"Hill Top"
+,
+
+            
+"Hillsborough / Hillsborough Corner"
+,
+ 
+"Holbrook"
+,
+ 
+"Hollinsend"
+,
+ 
+"Hunters Bar"
+,
+
+            
+"Hurlfield"
+,
+ 
+"Hyde Park"
+,
+ 
+"Intake"
+,
+ 
+"Jordanthorpe"
+,
+ 
+"Kelham / Kelham Island"
+,
+
+            
+"Little Sheffield"
+,
+ 
+"Littledale"
+,
+ 
+"Lodge Moor"
+,
+ 
+"Longley"
+,
+
+            
+"Low Edges / Lowedges"
+,
+ 
+"Lowfield"
+,
+ 
+"Loxley / Loxley Valley"
+,
+ 
+"Malin Bridge"
+,
+
+            
+"Manor / Manor Park / Manor Top"
+,
+ 
+"Meadowhead"
+,
+ 
+"Meersbrook"
+,
+ 
+"Middlewood"
+,
+
+            
+"Midhopestones"
+,
+ 
+"Millhouses"
+,
+ 
+"Mosborough"
+,
+ 
+"Neepsend"
+,
+ 
+"Nether Edge"
+,
+
+            
+"Nether Green"
+,
+ 
+"Netherthorpe"
+,
+ 
+"Newfield Green"
+,
+ 
+"Norfolk Park"
+,
+
+            
+"Normanton Spring"
+,
+ 
+"Norton"
+,
+ 
+"Norton Hammer"
+,
+ 
+"Norton Lees"
+,
+ 
+"Norwood"
+,
+
+            
+"Osgathorpe"
+,
+ 
+"Oughtibridge"
+,
+ 
+"Owlerton"
+,
+ 
+"Owlthorpe"
+,
+ 
+"Page Hall"
+,
+
+            
+"Park Hill"
+,
+ 
+"Parkhead"
+,
+ 
+"Parkwood Springs"
+,
+ 
+"Parson Cross"
+,
+ 
+"Philadelphia"
+,
+
+            
+"Pitsmoor"
+,
+ 
+"Ranmoor"
+,
+ 
+"Richmond"
+,
+ 
+"Ringinglow"
+,
+ 
+"Rivelin / Rivelin Valley"
+,
+
+            
+"Saint Vincent's and Shalesmoor"
+,
+ 
+"Sandygate"
+,
+ 
+"Sharrow"
+,
+ 
+"Sharrow Vale"
+,
+
+            
+"Sheffield Lane Top"
+,
+ 
+"Shirecliffe"
+,
+ 
+"Shiregreen"
+,
+ 
+"Sothall"
+,
+ 
+"Southey"
+,
+
+            
+"St George's Quarter"
+,
+ 
+"Stannington East and Deer Park"
+,
+ 
+"Stannington West"
+,
+
+            
+"Stocksbridge"
+,
+ 
+"Tapton"
+,
+ 
+"The Moor"
+,
+ 
+"Tinsley"
+,
+ 
+"Totley"
+,
+ 
+"Upperthorpe"
+,
+
+            
+"Wadsley"
+,
+ 
+"Wadsley Bridge"
+,
+ 
+"Walkley"
+,
+ 
+"Waterthorpe"
+,
+ 
+"Westfield"
+,
+
+            
+"Wharncliffe Side"
+,
+ 
+"Whirlow"
+,
+ 
+"Wicker"
+,
+ 
+"Wincobank"
+,
+ 
+"Winn Gardens"
+,
+
+            
+"Wisewood"
+,
+ 
+"Woodhouse"
+,
+ 
+"Woodseats"
+,
+ 
+"Woodthorpe"
+,
+ 
+"Worrall"
+,
+ 
+"Wybourn"
+
+        
+]
+;
+
+        
+// Populate neighbourhood list
+
+        
+const
+ listContainer 
+=
+ 
+document
+.
+getElementById
+(
+'neighbourhoodList'
+)
+;
+
+        neighbourhoods
+.
+forEach
+(
+name
+ 
+=>
+ 
+{
+
+            
+const
+ item 
+=
+ 
+document
+.
+createElement
+(
+'div'
+)
+;
+
+            item
+.
+className
+ 
+=
+ 
+'neighbourhood-item'
+;
+
+            item
+.
+textContent
+ 
+=
+ name
+;
+
+            listContainer
+.
+appendChild
+(
+item
+)
+;
+
+        
+}
+)
+;
+
+        
+// Load and display the GeoJSON
+
+        map
+.
+on
+(
+'load'
+,
+ 
+(
+)
+ 
+=>
+ 
+{
+
+            
+fetch
+(
+'data/neighbourhoods.geojson'
+)
+
+                
+.
+then
+(
+response
+ 
+=>
+ response
+.
+json
+(
+)
+)
+
+                
+.
+then
+(
+data
+ 
+=>
+ 
+{
+
+                    
+// Add the GeoJSON source
+
+                    map
+.
+addSource
+(
+'neighbourhoods'
+,
+ 
+{
+
+                        
+type
+:
+ 
+'geojson'
+,
+
+                        
+data
+:
+ data
+                    
+}
+)
+;
+
+                    
+// Add a layer for the neighbourhood boundaries
+
+                    map
+.
+addLayer
+(
+{
+
+                        
+id
+:
+ 
+'neighbourhood-fills'
+,
+
+                        
+type
+:
+ 
+'fill'
+,
+
+                        
+source
+:
+ 
+'neighbourhoods'
+,
+
+                        
+paint
+:
+ 
+{
+
+                            
+'fill-color'
+:
+ 
+'#2c3e50'
+,
+
+                            
+'fill-opacity'
+:
+ 
+0.05
+
+                        
+}
+
+                    
+}
+)
+;
+
+                    
+// Add a layer for the neighbourhood outlines
+
+                    map
+.
+addLayer
+(
+{
+
+                        
+id
+:
+ 
+'neighbourhood-borders'
+,
+
+                        
+type
+:
+ 
+'line'
+,
+
+                        
+source
+:
+ 
+'neighbourhoods'
+,
+
+                        
+paint
+:
+ 
+{
+
+                            
+'line-color'
+:
+ 
+'#333333'
+,
+
+                            
+'line-width'
+:
+ 
+1
+
+                        
+}
+
+                    
+}
+)
+;
+
+                    
+// Add hover effect
+
+                    map
+.
+addLayer
+(
+{
+
+                        
+id
+:
+ 
+'neighbourhood-hover'
+,
+
+                        
+type
+:
+ 
+'fill'
+,
+
+                        
+source
+:
+ 
+'neighbourhoods'
+,
+
+                        
+paint
+:
+ 
+{
+
+                            
+'fill-color'
+:
+ 
+'#2c3e50'
+,
+
+                            
+'fill-opacity'
+:
+ 
+0.3
+
+                        
+}
+,
+
+                        
+filter
+:
+ 
+[
+'=='
+,
+ 
+'name'
+,
+ 
+''
+]
+
+                    
+}
+)
+;
+
+                    
+// Create popup
+
+                    
+const
+ popup 
+=
+ 
+new
+ 
+maplibregl
+.
+Popup
+(
+{
+
+                        
+closeButton
+:
+ 
+false
+,
+
+                        
+closeOnClick
+:
+ 
+false
+
+                    
+}
+)
+;
+
+                    
+// Show popup on hover
+
+                    map
+.
+on
+(
+'mousemove'
+,
+ 
+'neighbourhood-fills'
+,
+ 
+(
+e
+)
+ 
+=>
+ 
+{
+
+                        map
+.
+getCanvas
+(
+)
+.
+style
+.
+cursor
+ 
+=
+ 
+'pointer'
+;
+
+                        
+const
+ name 
+=
+ e
+.
+features
+[
+0
+]
+.
+properties
+.
+name
+;
+
+                        
+// Update hover layer
+
+                        map
+.
+setFilter
+(
+'neighbourhood-hover'
+,
+ 
+[
+'=='
+,
+ 
+'name'
+,
+ name
+]
+)
+;
+
+                        
+// Show popup
+
+                        popup
+.
+setLngLat
+(
+e
+.
+lngLat
+)
+
+                            
+.
+setHTML
+(
+`
+<strong>
+${
+name
+}
+</strong>
+`
+)
+
+                            
+.
+addTo
+(
+map
+)
+;
+
+                    
+}
+)
+;
+
+                    map
+.
+on
+(
+'mouseleave'
+,
+ 
+'neighbourhood-fills'
+,
+ 
+(
+)
+ 
+=>
+ 
+{
+
+                        map
+.
+getCanvas
+(
+)
+.
+style
+.
+cursor
+ 
+=
+ 
+''
+;
+
+                        map
+.
+setFilter
+(
+'neighbourhood-hover'
+,
+ 
+[
+'=='
+,
+ 
+'name'
+,
+ 
+''
+]
+)
+;
+
+                        popup
+.
+remove
+(
+)
+;
+
+                    
+}
+)
+;
+
+                
+}
+)
+
+                
+.
+catch
+(
+error
+ 
+=>
+ 
+{
+
+                    
+console
+.
+error
+(
+'Error loading GeoJSON:'
+,
+ error
+)
+;
+
+                
+}
+)
+;
+
+        
+}
+)
+;
+
+    
+</
+script
+>
+
+</
+body
+>
+
+</
+html
+>
